@@ -40,35 +40,18 @@ int main() {
     }
     cin >> u >> v;
 
-    // int o2u = get_min_dis(1, u);
-    // int o2v = get_min_dis(1, v);
-    // int u2v = get_min_dis(u, v);
-    // int v2u = get_min_dis(v, u);
-    // int v2N = get_min_dis(v, N);
-    // int u2N = get_min_dis(u, N);
+    int o2u = get_min_dis(1, u);
+    int o2v = get_min_dis(1, v);
+    int u2v = get_min_dis(u, v);
+    int v2u = get_min_dis(v, u);
+    int v2N = get_min_dis(v, N);
+    int u2N = get_min_dis(u, N);
 
-    // int case1 = isInf(o2u) || isInf(u2v) || isInf(v2N) ? 
-    //     INT_MAX : o2u + u2v + v2N;
-    // int case2 = isInf(o2v) || isInf(v2u) || isInf(u2N) ? 
-    //     INT_MAX : o2v + v2u + u2N;
+    int case1 = isInf(o2u) || isInf(u2v) || isInf(v2N) ? 
+        INF : o2u + u2v + v2N;
+    int case2 = isInf(o2v) || isInf(v2u) || isInf(u2N) ? 
+        INF : o2v + v2u + u2N;
 
-    // if(isInf(case1) && isInf(case2)) cout << -1;
-    // else cout << min(case1, case2);
-    int ans1, ans2;
-
-    if (get_min_dis(1, u) == INF || get_min_dis(u, v) == INF || get_min_dis(v, N) == INF)
-		ans1 = INF;
-	else
-		ans1 = get_min_dis(1, u) + get_min_dis(u, v) + get_min_dis(v, N);
-
-	if (get_min_dis(1, v) == INF || get_min_dis(v, u) == INF || get_min_dis(u, N) == INF)
-		ans2 = INF;
-	else
-		ans2 = get_min_dis(1, v) + get_min_dis(v, u) + get_min_dis(u, N);
-
-	if (ans1 == INF && ans2 == INF)
-		cout << "-1";
-	else
-		cout << min(ans1, ans2);
-
+    if(isInf(case1) && isInf(case2)) cout << "-1";
+    else cout << min(case1, case2);
 }

@@ -13,27 +13,18 @@ vector<int> solution(vector<int> prices) {
         
         while(st.top().first > prices[i]) {
             auto [top_price, top_time] = st.top();
-
-            if(top_price > prices[i]) {
-                // cout << "pop : " << top_price << " " << i-top_time+1 << endl;
-                answer[top_time-1] = i + 1 - top_time;
-                st.pop();
-            }   
+            answer[top_time-1] = i + 1 - top_time;
+            st.pop();
         }
-        
-        // cout << "push : " << prices[i] << " " << i+1 << endl;
         st.emplace(prices[i], i+1);
     }
-    // cout << endl;
     
     while(!st.empty()) {
         auto [top_price, top_time] = st.top();
         if(top_price == -1) break;
-        // cout << "pop : " << top_price << " " << top_time << endl;
         answer[top_time-1] = prices.size() - top_time;
         st.pop();
     }
-    
     
     return answer;
 }

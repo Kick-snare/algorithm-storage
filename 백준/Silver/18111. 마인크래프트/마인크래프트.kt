@@ -3,20 +3,24 @@ private fun readInts() = readStrings().map { it.toInt() }
 
 fun main() {
     var maxHeight = 0
-    var minHeight = 300
+    var minHeight = 257
+    var heightSum = 0
     val (n, m, b) = readInts()
     val arr = Array(n) { IntArray(m) }
 
     repeat(n) { i ->
         readln().split(' ').forEachIndexed { j, h ->
             val height = h.toInt()
-            maxHeight = maxHeight.coerceAtLeast(height)
-            minHeight = minHeight.coerceAtMost(height)
+            maxHeight = maxOf(maxHeight, height)
+            minHeight = minOf(minHeight, height)
             arr[i][j] = height
+            heightSum += height
         }
     }
 
-    var candidate = Pair(Int.MAX_VALUE, 0 )
+    val avgHeight = (heightSum + b) / (n * m)
+    maxHeight = minOf(maxHeight, avgHeight)
+    var candidate = Pair(Int.MAX_VALUE, 0)
 
     for(height in minHeight..maxHeight) {
         var stackCount = 0

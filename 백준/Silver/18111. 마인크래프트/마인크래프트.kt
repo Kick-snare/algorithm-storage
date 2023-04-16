@@ -1,3 +1,5 @@
+import java.util.StringTokenizer
+
 private fun readStrings() = readln().split(" ")
 private fun readInts() = readStrings().map { it.toInt() }
 
@@ -16,10 +18,11 @@ fun main() {
     var minHeight = 300
     val (n, m, b) = readInts()
     val arr = Array(n) { IntArray(m) }
-    
+
     repeat(n) { i ->
-        readln().split(' ').forEachIndexed { j, h ->
-            val height = h.toInt()
+        val st = StringTokenizer(readln())
+        repeat(m) { j ->
+            val height = st.nextToken().toInt()
             maxHeight = maxHeight.coerceAtLeast(height)
             minHeight = minHeight.coerceAtMost(height)
             arr[i][j] = height

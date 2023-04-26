@@ -1,107 +1,62 @@
 import java.util.*
-import kotlin.math.*
+import kotlin.math.abs
 
-fun main() {
-    fun readInts() = readln().split(' ').map{ it.toInt() }
-    val (N, L, R) = readInts()
-    val arr = Array(N) { IntArray(N) }
-
-    repeat(N) { r ->
-        readInts().forEachIndexed { c, v ->
-            arr[r][c] = v
-        }
-    }
-    
-    
-    var dayPassed = 0
-    
-    while(movePopulation(arr, Triple(N, L, R))) { dayPassed++ }
-    
-    println(dayPassed)
-}
+fun readInts() = readln().split(' ').map { it.toInt() }
+val dx = listOf(0,1,0,-1)
+val dy = listOf(-1,0,1,0)
 
 data class Union(
-    val population: Int,
-    val unionList: List<Pair<Int, Int>>
+    var sum: Int = 0,
+    val list: MutableList<Pair<Int, Int>> = mutableListOf()
 )
 
-fun movePopulation(
-    arr: Array<IntArray>,
-    tuple: Triple<Int, Int, Int>
-): Boolean {
-    val (N, L, R) = tuple
-    val selected = Array(N) { BooleanArray(N) { false } }
-    var isMoved = false
-    
-    val queue: Queue<Union> = LinkedList()
-    
-    for(i in 0 until N) {
-        for(j in 0 until N) {
-            if(selected[i][j]) continue
-            queue.offer(bfs(arr, selected, tuple, Pair(i, j)))
-            
+fun main() {
+    val (n, l, r) = readInts()
+    val map = Array(n) { readInts().toIntArray() }
+    val lr = l..r
+    var day = 0
+
+    while(true) {
+        var open = false
+        val visited = Array(n) { Array(n) { false } }
+        val unionList = mutableListOf<Union>()
+        for(i in 0..n-1) for(j in 0..n-1) {
+            if(visited[i][j]) continue
+            visited[i][j] = true
+
+            val union = bfs(map, visited, n, lr, i, j)
+            unionList.add(union)
         }
-    }
-    
-    while(queue.isNotEmpty()) {
-        val (avg, list) = queue.poll()
-        list.forEach { (y, x) ->
-            if(list.size > 1) isMoved = true
-            arr[y][x] = avg
+
+        unionList.forEach { (sum, list) ->
+            if(list.size > 1) open = true
+            list.forEach { (y, x) -> map[y][x] = sum / list.size }
         }
+        if(!open) break
+        day++
     }
-//    println()
-//    arr.forEach { println(it.contentToString()) }
-//    println()
-    
-    return isMoved
+    print(day)
 }
 
-fun bfs(
-    arr: Array<IntArray>,
-    selected: Array<BooleanArray>,
-    tuple: Triple<Int, Int, Int>,
-    pair: Pair<Int, Int>
-): Union {
-    
-    val (N, L, R) = tuple
-    val dx = listOf(0, 1, 0, -1)
-    val dy = listOf(-1, 0, 1, 0)
-    
-    val unionList = mutableListOf<Pair<Int, Int>>()
-    var sum = 0
-    
-    val queue : Queue<Pair<Int, Int>> = LinkedList()
-    queue.offer(pair)
-    
-    selected[pair.first][pair.second] = true
-    
-    while(queue.isNotEmpty()) {
-        
-        unionList.add(queue.peek())
-        val (y, x) = queue.poll()
-//        println("($y,$x) ${arr[y][x]}")
-        
-        sum += arr[y][x]
-            
+fun bfs(map: Array<IntArray>, visited: Array<Array<Boolean>>, n: Int, lr: IntRange, sy: Int, sx: Int): Union {
+    val union = Union(map[sy][sx], mutableListOf(sy to sx))
+    val q = LinkedList<Pair<Int, Int>>()
+    q.add(union.list.last())
+
+    while(q.isNotEmpty()) {
+        val (y, x) = q.poll()
+
         for(i in 0..3) {
-            val newPair = Pair(y + dy[i], x + dx[i])
-            
-            if(
-                isIn(newPair.first, newPair.second, N) &&
-                abs(arr[newPair.first][newPair.second] - arr[y][x]) in L..R
-            ) {
-//                println("new >> ${Pair(y, x)} $newPair ${selected[newPair.first][newPair.second]}")
-                
-                if(!selected[newPair.first][newPair.second]) { 
-                    selected[newPair.first][newPair.second] = true
-                    queue.offer(newPair)
-                }
-            }
+            val (nx, ny) = x+dx[i] to y+dy[i]
+
+            if(nx !in 0..n-1 || ny !in 0..n-1 || visited[ny][nx]) continue
+            if(abs(map[y][x] - map[ny][nx]) !in lr) continue
+
+            visited[ny][nx] = true
+            q.add(ny to nx)
+            union.sum += map[ny][nx]
+            union.list.add(ny to nx)
         }
     }
-//    println()
-    return Union(sum / unionList.size, unionList)
+    return union
 }
-
-fun isIn(y: Int, x: Int, N: Int) = (x in 0 until N) && (y in 0 until N)
